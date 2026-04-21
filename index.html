@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>🌟 JES-VIP · Profil & Rekomendasi · KEN-PRIME 🌟</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body,html{width:100%;height:100%;overflow:hidden;background:#0a192f;font-family:'Segoe UI','Roboto',sans-serif;}
+    
+    /* SPLASH SCREEN (LOGIN ANIMASI) */
+    #splashScreen {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      background: radial-gradient(circle at 30% 30%, #1a3650, #0a192f);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 1000; transition: opacity 0.8s ease, visibility 0.8s;
+      backdrop-filter: blur(10px);
+    }
+    .splash-content {
+      text-align: center;
+      animation: floatGlow 3s infinite alternate;
+    }
+    .ai-title {
+      font-size: 3.5rem; font-weight: 900;
+      background: linear-gradient(45deg, #64ffda, #a8b2d1);
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 30px #64ffda;
+      margin-bottom: 10px;
+    }
+    .ai-sub {
+      color: #8892b0; font-size: 1.2rem; letter-spacing: 4px;
+      margin-bottom: 40px;
+    }
+    .enter-btn {
+      background: transparent; border: 2px solid #64ffda; color: #64ffda;
+      padding: 16px 48px; border-radius: 60px; font-size: 1.4rem; font-weight: bold;
+      cursor: pointer; box-shadow: 0 0 30px #64ffda80; transition: 0.3s;
+      backdrop-filter: blur(5px); background: #11224040;
+      animation: pulseBtn 2s infinite;
+    }
+    .enter-btn:hover {
+      background: #64ffda; color: #0a192f; box-shadow: 0 0 50px #64ffda;
+      transform: scale(1.05);
+    }
+    .particle {
+      position: absolute; width: 4px; height: 4px; background: #64ffda;
+      border-radius: 50%; opacity: 0.6; pointer-events: none;
+      animation: floatParticle 8s infinite linear;
+    }
+    @keyframes floatGlow {
+      0% { transform: translateY(0); filter: drop-shadow(0 0 20px #64ffda); }
+      100% { transform: translateY(-10px); filter: drop-shadow(0 0 40px #64ffda); }
+    }
+    @keyframes pulseBtn {
+      0% { box-shadow: 0 0 20px #64ffda80; }
+      50% { box-shadow: 0 0 40px #64ffda; }
+      100% { box-shadow: 0 0 20px #64ffda80; }
+    }
+    @keyframes floatParticle {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+    }
+    
+    /* MAIN APP (hidden by default until enter) */
+    #mainApp {
+      display: none; flex-direction: column; width:100vw; height:100vh;
+      background:#0a192f; color:#ccd6f6; box-shadow:inset 0 0 50px #020c1b;
+    }
+    .header{background:linear-gradient(145deg,#112240,#0a192f);padding:12px 18px;border-bottom:3px solid #64ffda;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px #64ffda30; flex-wrap:wrap;}
+    .header h1{font-size:1.6rem;font-weight:900;background:linear-gradient(45deg,#64ffda,#8892b0);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 20px #64ffda;flex:1;}
+    .header-actions{display:flex;gap:8px;}
+    .icon-btn{background:#112240;border:1px solid #233554;color:#64ffda;border-radius:30px;padding:6px 12px;font-size:0.8rem;cursor:pointer;transition:0.1s; display:flex; align-items:center; gap:4px;}
+    .icon-btn:hover{background:#233554;}
+    .mode-selector{display:flex;gap:8px;margin-right:10px;}
+    .mode-btn{background:#112240;border:1px solid #233554;color:#8892b0;border-radius:30px;padding:6px 12px;font-size:0.8rem;cursor:pointer;transition:0.1s;}
+    .mode-btn.active{background:#64ffda;border-color:#64ffda;color:#0a192f;box-shadow:0 0 10px #64ffda;}
+    .profile-section{padding:16px 18px 8px;background:#020c1b;border-bottom:1px solid #233554;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+    .avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(145deg,#64ffda,#0a192f);border:2px solid #64ffda;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:bold;color:#0a192f;box-shadow:0 0 15px #64ffda80;}
+    .profile-info{flex:1;}
+    .profile-name{font-size:1.2rem;font-weight:bold;color:#ccd6f6;display:flex;align-items:center;gap:8px;}
+    .badge{background:#64ffda20;border:1px solid #64ffda;color:#64ffda;padding:2px 8px;border-radius:20px;font-size:0.7rem;}
+    .profile-bio{font-size:0.85rem;color:#8892b0;margin-top:4px;}
+    .profile-stats{display:flex;gap:16px;margin-top:6px;}
+    .stat-item{display:flex;flex-direction:column;align-items:center;}
+    .stat-value{font-weight:bold;color:#64ffda;}
+    .stat-label{font-size:0.65rem;color:#8892b0;}
+    .edit-profile-btn{background:transparent;border:1px solid #64ffda;color:#64ffda;border-radius:20px;padding:4px 12px;font-size:0.75rem;cursor:pointer;}
+    .chat-container{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:16px;background:#0a192f;background-image:radial-gradient(circle at 30% 20%,#112240 0%,#020c1b 90%);scroll-behavior:smooth;}
+    .chat-container::-webkit-scrollbar{width:5px;}
+    .chat-container::-webkit-scrollbar-track{background:#112240;}
+    .chat-container::-webkit-scrollbar-thumb{background:#64ffda;border-radius:10px;}
+    .message{display:flex;flex-direction:column;max-width:85%;animation:slideUp 0.2s; position:relative;}
+    .user-message{align-self:flex-end;}
+    .bot-message{align-self:flex-start;}
+    .bubble{padding:12px 18px;border-radius:24px;line-height:1.5;font-size:1rem;word-break:break-word;box-shadow:0 5px 10px #00000060;}
+    .user-bubble{background:#233554;color:#e6f1ff;border-bottom-right-radius:6px;border:1px solid #64ffda;}
+    .bot-bubble{background:#112240;color:#ccd6f6;border-bottom-left-radius:6px;border:1px solid #64ffda;}
+    .message-actions{display:flex; gap:4px; margin-top:4px; margin-left:8px;}
+    .delete-btn{background:transparent; border:1px solid #ff6b6b; color:#ff6b6b; border-radius:20px; padding:2px 8px; font-size:0.65rem; cursor:pointer; opacity:0.7;}
+    .delete-btn:hover{opacity:1; background:#ff6b6b20;}
+    .thinking-module{display:flex;align-items:center;gap:12px;padding:14px 20px;background:#112240;border-radius:40px;width:fit-content;border:1.5px solid #64ffda;box-shadow:0 0 20px #64ffda40;}
+    .thinking-text{color:#64ffda;font-style:italic;}
+    .dot-flashing{display:flex;gap:8px;}
+    .dot-flashing span{width:10px;height:10px;border-radius:50%;background:#64ffda;animation:flash 1.2s infinite;}
+    .dot-flashing span:nth-child(2){animation-delay:0.2s;}
+    .dot-flashing span:nth-child(3){animation-delay:0.4s;}
+    @keyframes flash{0%,100%{opacity:0.2;transform:scale(0.7);}50%{opacity:1;transform:scale(1.3);background:#64ffda;}}
+    .pulse-bar{display:flex;gap:4px;}
+    .pulse-bar span{width:20px;height:8px;background:#64ffda;border-radius:4px;animation:pulseBar 1.2s infinite;}
+    .pulse-bar span:nth-child(2){animation-delay:0.2s;}
+    .pulse-bar span:nth-child(3){animation-delay:0.4s;}
+    @keyframes pulseBar{0%,100%{opacity:0.3;transform:scaleY(0.7);}50%{opacity:1;transform:scaleY(1.3);background:#64ffda;}}
+    .typing-cursor{display:inline-block;width:3px;height:1.3em;background:#64ffda;margin-left:5px;animation:blink 1s step-end infinite;}
+    @keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+    .recommendation-area{padding:12px 16px 8px;background:#020c1b;border-top:2px solid #233554;}
+    .rec-title{font-size:0.8rem;color:#8892b0;margin-bottom:8px;}
+    .rec-buttons{display:flex;flex-wrap:wrap;gap:8px;max-height:120px;overflow-y:auto;padding:2px;}
+    .rec-buttons::-webkit-scrollbar{height:3px;}
+    .rec-buttons::-webkit-scrollbar-thumb{background:#64ffda;border-radius:10px;}
+    .rec-btn{background:#112240;border:1px solid #233554;color:#ccd6f6;padding:8px 16px;border-radius:40px;font-size:0.8rem;cursor:pointer;white-space:nowrap;}
+    .rec-btn:hover{background:#233554;border-color:#64ffda;}
+    .input-area{padding:14px 18px;background:#0a192f;border-top:2px solid #233554;display:flex;gap:10px;align-items:center;}
+    .attach-btn{background:#112240;border:1px solid #233554;color:#64ffda;width:48px;height:48px;border-radius:30px;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;}
+    .input-area input{flex:1;background:#112240;border:1.5px solid #233554;border-radius:60px;padding:14px 18px;color:#ccd6f6;font-size:1rem;outline:none;}
+    .input-area input:focus{border-color:#64ffda;box-shadow:0 0 15px #64ffda80;}
+    .send-btn{background:#64ffda;border:none;border-radius:40px;width:56px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#0a192f;font-size:22px;border:1px solid #64ffda;position:relative;overflow:hidden;font-weight:bold;}
+    .send-btn:hover{background:#9bf0d5;}
+    .train-animation{position:absolute;pointer-events:none;animation:trainFly 0.4s ease-out forwards;}
+    @keyframes trainFly{0%{transform:translateX(0) scale(1);opacity:1;}100%{transform:translateX(60px) scale(0.2);opacity:0;}}
+    .timestamp{font-size:0.65rem;margin-top:5px;margin-left:10px;color:#8892b0;}
+    .media-preview{max-width:200px;border-radius:20px;margin-top:8px;border:1px solid #64ffda;}
+    @keyframes slideUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+  </style>
+</head>
+<body>
+<!-- SPLASH SCREEN (LOGIN) -->
+<div id="splashScreen">
+  <div class="splash-content">
+    <div class="ai-title">JES-VIP</div>
+    <div class="ai-sub">KEN-PRIME</div>
+    <button class="enter-btn" id="enterBtn">✨ MASUK ✨</button>
+  </div>
+  <!-- Particles -->
+  <div id="particlesContainer"></div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp">
+  <div class="header">
+    <h1>🌟 JES-VIP · Memory</h1>
+    <div class="mode-selector">
+      <button class="mode-btn active" data-mode="dot">🔵 Dot</button>
+      <button class="mode-btn" data-mode="pulse">📶 Pulse</button>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="newChatBtn">✨ New Chat</button>
+      <button class="icon-btn" id="clearHistoryBtn">🧹 Clear All</button>
+    </div>
+  </div>
+  
+  <div class="profile-section">
+    <div class="avatar" id="profileAvatar">👤</div>
+    <div class="profile-info">
+      <div class="profile-name">
+        <span id="profileDisplayName">Pengguna JES-VIP</span>
+        <span class="badge">⭐ Member</span>
+        <button class="edit-profile-btn" id="editProfileBtn">✏️ Edit</button>
+      </div>
+      <div class="profile-bio" id="profileBio">AI enthusiast · Selalu ingin belajar</div>
+      <div class="profile-stats">
+        <div class="stat-item"><span class="stat-value" id="msgCount">0</span><span class="stat-label">Pesan</span></div>
+        <div class="stat-item"><span class="stat-value">24</span><span class="stat-label">Sesi</span></div>
+        <div class="stat-item"><span class="stat-value">🌟</span><span class="stat-label">Aktif</span></div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="chatBox" class="chat-container"></div>
+  
+  <div class="recommendation-area">
+    <div class="rec-title">💡 REKOMENDASI AI ASLI (klik tanya)</div>
+    <div class="rec-buttons" id="recContainer"></div>
+  </div>
+  
+  <div class="input-area">
+    <input type="file" id="mediaInput" accept="image/*" style="display:none;">
+    <button class="attach-btn" id="attachBtn">📎</button>
+    <input type="text" id="userInput" placeholder="Silakan masukan pesan anda tuan" autocomplete="off">
+    <button class="send-btn" id="sendBtn">➤</button>
+  </div>
+</div>
+
+<script>
+  (function(){
+    // API KEY
+    const MISTRAL_KEY = "xyiyIWvnseQPYPgrrgs6QDyweeeodSrR";
+    const API_URL = "https://api.mistral.ai/v1/chat/completions";
+    
+    // DOM Elements
+    const splash = document.getElementById('splashScreen');
+    const mainApp = document.getElementById('mainApp');
+    const enterBtn = document.getElementById('enterBtn');
+    const chatBox = document.getElementById('chatBox');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const attachBtn = document.getElementById('attachBtn');
+    const mediaInput = document.getElementById('mediaInput');
+    const recContainer = document.getElementById('recContainer');
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    const newChatBtn = document.getElementById('newChatBtn');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    const editProfileBtn = document.getElementById('editProfileBtn');
+    const profileAvatar = document.getElementById('profileAvatar');
+    const profileDisplayName = document.getElementById('profileDisplayName');
+    const profileBio = document.getElementById('profileBio');
+    const msgCountSpan = document.getElementById('msgCount');
+    
+    let isGenerating = false;
+    let currentMode = 'dot';
+    
+    // MEMORI
+    let conversationHistory = [
+      { role: "system", content: "Kamu adalah JES-VIP versi ramah, asisten AI yang membantu, sopan, dan informatif. Jawablah pertanyaan dengan jelas, akurat, dan hindari konten negatif atau ilegal. Ingatlah konteks percakapan sebelumnya." }
+    ];
+    
+    // REKOMENDASI LENGKAP
+    const recommendations = [
+      "💻 Cara belajar coding dari nol","📚 Rekomendasi buku pengembangan diri","🤖 Apa itu AI dan contoh penerapannya",
+      "🌐 Cara membuat website sederhana","⚛️ Tips produktif bekerja dari rumah","🧘 Teknik meditasi untuk pemula",
+      "💰 Cara mengatur keuangan pribadi","🍳 Resep masakan sehat 15 menit","🎨 Ide proyek DIY kreatif",
+      "📝 Cara menulis CV yang menarik","🗣️ Tips public speaking efektif","🔒 Dasar-dasar keamanan siber",
+      "📱 Cara memulai bisnis online","🌍 Fakta menarik tentang luar angkasa","🎵 Rekomendasi musik untuk fokus",
+      "🏋️ Latihan ringan di rumah","📖 Cara meningkatkan daya ingat","🎬 Film inspiratif wajib tonton",
+      "🛠️ Tools AI gratis untuk produktivitas","🧠 Mitos vs fakta psikologi","♻️ Tips hidup ramah lingkungan",
+      "💡 Cara menghasilkan ide kreatif","📊 Belajar Excel untuk pemula","☕ Jenis kopi dan cara menyeduhnya",
+      "🗺️ Destinasi wisata dalam negeri","🖌️ Belajar desain grafis dasar"
+    ];
+    
+    // SPLASH SCREEN PARTICLES
+    function createParticles() {
+      const container = document.getElementById('particlesContainer');
+      for(let i=0; i<30; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random()*100+'%';
+        p.style.top = Math.random()*100+'%';
+        p.style.animationDelay = Math.random()*8+'s';
+        p.style.width = (2+Math.random()*6)+'px';
+        p.style.height = p.style.width;
+        container.appendChild(p);
+      }
+    }
+    createParticles();
+    
+    // ENTER BUTTON
+    enterBtn.addEventListener('click', ()=>{
+      splash.style.opacity = '0';
+      splash.style.visibility = 'hidden';
+      mainApp.style.display = 'flex';
+      setTimeout(()=> splash.style.display = 'none', 800);
+    });
+    
+    // PROFIL
+    function loadProfile() {
+      const saved = localStorage.getItem('jesvip_profile');
+      if(saved) {
+        try{
+          const p = JSON.parse(saved);
+          profileAvatar.textContent = p.avatar || '👤';
+          profileDisplayName.textContent = p.name || 'Pengguna JES-VIP';
+          profileBio.textContent = p.bio || 'AI enthusiast · Selalu ingin belajar';
+        }catch(e){}
+      }
+      updateMessageCount();
+    }
+    function saveProfile(name, bio, avatar) {
+      const profile = { name, bio, avatar };
+      localStorage.setItem('jesvip_profile', JSON.stringify(profile));
+      profileAvatar.textContent = avatar || '👤';
+      profileDisplayName.textContent = name || 'Pengguna JES-VIP';
+      profileBio.textContent = bio || 'AI enthusiast · Selalu ingin belajar';
+    }
+    function updateMessageCount() {
+      const userMsgCount = conversationHistory.filter(m => m.role === 'user').length;
+      msgCountSpan.textContent = userMsgCount;
+    }
+    editProfileBtn.addEventListener('click', ()=>{
+      const newName = prompt('Masukkan nama tampilan:', profileDisplayName.textContent);
+      if(newName !== null) {
+        const newBio = prompt('Masukkan bio singkat:', profileBio.textContent);
+        if(newBio !== null) {
+          const newAvatar = prompt('Masukkan emoji avatar (1 karakter):', profileAvatar.textContent);
+          saveProfile(newName || 'Pengguna JES-VIP', newBio || '', newAvatar || '👤');
+        }
+      }
+    });
+    
+    // RENDER CHAT
+    function renderChatFromHistory() {
+      chatBox.innerHTML = '';
+      const welcomeDiv = document.createElement('div');
+      welcomeDiv.className = 'message bot-message';
+      welcomeDiv.innerHTML = `
+        <div class="bubble bot-bubble">✨ Halo! Aku JES-VIP dengan profil dan rekomendasi lengkap. Aku ingat percakapan kita.<br>Silakan masukan pesan anda tuan.</div>
+        <div class="timestamp">${formatTime()}</div>
+      `;
+      chatBox.appendChild(welcomeDiv);
+      conversationHistory.slice(1).forEach(msg => {
+        if (msg.role === 'user') addUserMessageToChat(msg.content, null, false);
+        else if (msg.role === 'assistant') addBotMessageToChat(msg.content, false);
+      });
+      scrollBottom();
+      updateMessageCount();
+    }
+    function addUserMessageToChat(text, imgUrl=null, pushToHistory = true) {
+      const div = document.createElement('div');
+      div.className = 'message user-message';
+      let html = `<div class="bubble user-bubble">${escapeHTML(text)}</div>`;
+      if(imgUrl) html += `<img src="${imgUrl}" class="media-preview" alt="upload">`;
+      html += `<div class="timestamp">${formatTime()}</div>`;
+      html += `<div class="message-actions"><button class="delete-btn" data-role="user" data-content="${escapeHTML(text)}">🗑️</button></div>`;
+      div.innerHTML = html;
+      chatBox.appendChild(div);
+      scrollBottom();
+      if(pushToHistory) conversationHistory.push({ role: "user", content: text });
+      div.querySelector('.delete-btn').addEventListener('click', (e)=> deleteMessageByContent(e.target.dataset.content, 'user'));
+      updateMessageCount();
+    }
+    function addBotMessageToChat(text, pushToHistory = true) {
+      const div = document.createElement('div');
+      div.className = 'message bot-message';
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble bot-bubble';
+      bubble.textContent = text;
+      div.appendChild(bubble);
+      div.innerHTML += `<div class="timestamp">${formatTime()}</div>`;
+      div.innerHTML += `<div class="message-actions"><button class="delete-btn" data-role="assistant" data-content="${escapeHTML(text)}">🗑️</button></div>`;
+      chatBox.appendChild(div);
+      scrollBottom();
+      if(pushToHistory) conversationHistory.push({ role: "assistant", content: text });
+      div.querySelector('.delete-btn').addEventListener('click', (e)=> deleteMessageByContent(e.target.dataset.content, 'assistant'));
+      return bubble;
+    }
+    function deleteMessageByContent(content, role) {
+      const index = conversationHistory.findIndex((msg,i) => i>0 && msg.role === role && msg.content === content);
+      if(index !== -1) conversationHistory.splice(index, 1);
+      renderChatFromHistory();
+    }
+    function clearAllHistory() {
+      conversationHistory = [conversationHistory[0]];
+      renderChatFromHistory();
+    }
+    function newChat() { clearAllHistory(); }
+    function renderRecs(){
+      recContainer.innerHTML = '';
+      recommendations.forEach(t=>{
+        const b = document.createElement('button');
+        b.className = 'rec-btn';
+        b.textContent = t;
+        b.onclick = ()=>{ userInput.value = t.replace(/^[^\w]+/, ''); sendMessage(); };
+        recContainer.appendChild(b);
+      });
+    }
+    modeBtns.forEach(b=> b.addEventListener('click', function(){
+      modeBtns.forEach(btn=> btn.classList.remove('active'));
+      this.classList.add('active');
+      currentMode = this.dataset.mode;
+    }));
+    const formatTime = ()=> new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    const scrollBottom = ()=> chatBox.scrollTop = chatBox.scrollHeight;
+    const escapeHTML = (s)=> s.replace(/[&<>]/g, m=> ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]||m);
+    
+    function showThinking(){
+      const wrap = document.createElement('div');
+      wrap.className = 'message bot-message';
+      const mod = document.createElement('div');
+      mod.className = 'thinking-module';
+      mod.innerHTML = `<span class="thinking-text">💭 Berpikir...</span>`;
+      const anim = document.createElement('div');
+      if(currentMode==='dot'){
+        anim.className = 'dot-flashing';
+        anim.innerHTML = '<span></span><span></span><span></span>';
+      }else{
+        anim.className = 'pulse-bar';
+        anim.innerHTML = '<span></span><span></span><span></span>';
+      }
+      mod.appendChild(anim);
+      wrap.appendChild(mod);
+      chatBox.appendChild(wrap);
+      scrollBottom();
+      return wrap;
+    }
+    function removeThinking(el){ if(el) el.remove(); }
+    function typewriter(element, text, speed=20){
+      return new Promise(resolve=>{
+        let i=0;
+        element.textContent = '';
+        const cursor = document.createElement('span');
+        cursor.className = 'typing-cursor';
+        element.appendChild(cursor);
+        function type(){
+          if(i<text.length){
+            element.textContent = text.substring(0,i+1);
+            element.appendChild(cursor);
+            i++;
+            setTimeout(type, speed);
+          }else{
+            const c = element.querySelector('.typing-cursor');
+            if(c) c.remove();
+            resolve();
+          }
+        }
+        type();
+      });
+    }
+    async function callMistralWithMemory() {
+      const res = await fetch(API_URL, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${MISTRAL_KEY}`},
+        body:JSON.stringify({ model: "mistral-small-latest", messages: conversationHistory, temperature:0.8, max_tokens:900 })
+      });
+      const rawText = await res.text();
+      if(!res.ok) throw new Error(`HTTP ${res.status}: ${rawText}`);
+      const data = JSON.parse(rawText);
+      if(!data.choices?.[0]?.message?.content) throw new Error('Respons kosong');
+      return data.choices[0].message.content;
+    }
+    function trainAnimation(){
+      const train = document.createElement('span');
+      train.textContent = '🚂';
+      train.style.cssText = 'position:absolute;left:10px;top:10px;font-size:28px;pointer-events:none;';
+      train.classList.add('train-animation');
+      sendBtn.style.position = 'relative';
+      sendBtn.appendChild(train);
+      setTimeout(()=> train.remove(), 400);
+    }
+    async function sendMessage(){
+      const text = userInput.value.trim();
+      if(!text || isGenerating) return;
+      userInput.value = '';
+      isGenerating = true;
+      sendBtn.disabled = true;
+      userInput.disabled = true;
+      trainAnimation();
+      addUserMessageToChat(text, null, true);
+      const thinkEl = showThinking();
+      try{
+        const reply = await callMistralWithMemory();
+        removeThinking(thinkEl);
+        const bubble = addBotMessageToChat(reply, true);
+        await typewriter(bubble, reply, 20);
+      }catch(e){
+        removeThinking(thinkEl);
+        console.error(e);
+        const errMsg = `⚠️ Maaf, terjadi kesalahan: ${e.message}`;
+        const eb = addBotMessageToChat(errMsg, false);
+        await typewriter(eb, errMsg, 15);
+      }finally{
+        isGenerating = false;
+        sendBtn.disabled = false;
+        userInput.disabled = false;
+        userInput.focus();
+      }
+    }
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', e=>{ if(e.key==='Enter'){ e.preventDefault(); sendMessage(); }});
+    attachBtn.addEventListener('click', ()=> mediaInput.click());
+    mediaInput.addEventListener('change', e=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ev=>{
+        const url = ev.target.result;
+        addUserMessageToChat(`[Media] 📷 ${file.name}`, url, true);
+        setTimeout(async ()=>{
+          const think = showThinking();
+          await new Promise(r=> setTimeout(r, 500));
+          removeThinking(think);
+          const reply = `📎 Gambar "${file.name}" diterima. Aku belum bisa analisis gambar, tapi tanyakan saja!`;
+          const bubble = addBotMessageToChat(reply, true);
+          await typewriter(bubble, reply, 20);
+        }, 50);
+        mediaInput.value = '';
+      };
+      reader.readAsDataURL(file);
+    });
+    userInput.addEventListener('keydown', e=>{
+      if(e.key==='Enter' && userInput.value.trim()==='/menu'){
+        e.preventDefault();
+        addUserMessageToChat('/menu', null, true);
+        userInput.value = '';
+        setTimeout(async ()=>{
+          const think = showThinking();
+          await new Promise(r=> setTimeout(r, 400));
+          removeThinking(think);
+          const reply = `📋 FITUR JES-VIP:\n• Profil dapat diedit\n• 25+ rekomendasi AI asli\n• Memori percakapan\n• New Chat & Clear All\n• Hapus pesan individual\n• Upload gambar\n• Mode thinking animasi\n\nSelamat mencoba!`;
+          const bubble = addBotMessageToChat(reply, true);
+          await typewriter(bubble, reply, 20);
+        }, 30);
+      }
+    });
+    newChatBtn.addEventListener('click', newChat);
+    clearHistoryBtn.addEventListener('click', clearAllHistory);
+    
+    // INIT
+    loadProfile();
+    renderChatFromHistory();
+    renderRecs();
+    userInput.focus();
+  })();
+</script>
+</body>
+  </html>
