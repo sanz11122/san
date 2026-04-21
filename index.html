@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>🌟 JES-VIP · AI Paling Pintar · KEN-PRIME 🌟</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body,html{width:100%;height:100%;overflow:hidden;background:#0a192f;font-family:'Segoe UI','Roboto',sans-serif;}
+    #app{display:flex;width:100vw;height:100vh;}
+    .history-sidebar { width: 280px; background:#0d1b2a; border-right:1px solid #233554; display:flex; flex-direction:column; transition: transform 0.3s; z-index:10; }
+    .sidebar-header { padding:20px 16px; border-bottom:1px solid #233554; display:flex; justify-content:space-between; align-items:center; color:#64ffda; }
+    .history-list { flex:1; overflow-y:auto; padding:10px; }
+    .history-item { background:#112240; padding:12px; border-radius:12px; margin-bottom:8px; border:1px solid #233554; cursor:pointer; transition:0.1s; position:relative; }
+    .history-item:hover { background:#1a2f4a; border-color:#64ffda; }
+    .history-title { color:#ccd6f6; font-weight:bold; font-size:0.9rem; padding-right:24px; }
+    .history-time { color:#8892b0; font-size:0.7rem; margin-top:4px; }
+    .delete-session-btn { position:absolute; top:8px; right:8px; background:transparent; border:none; color:#ff6b6b; font-size:1rem; cursor:pointer; opacity:0.6; padding:2px 6px; border-radius:20px; }
+    .delete-session-btn:hover { opacity:1; background:#ff6b6b20; }
+    .new-chat-btn-side { background:#64ffda; color:#0a192f; border:none; padding:12px; border-radius:30px; font-weight:bold; margin:16px; cursor:pointer; }
+    .clear-all-sessions-btn { background:transparent; border:1px solid #ff6b6b; color:#ff6b6b; padding:8px; border-radius:30px; margin:0 16px 16px; cursor:pointer; font-size:0.8rem; }
+    .main-chat { flex:1; display:flex; flex-direction:column; background:#0a192f; color:#ccd6f6; box-shadow:inset 0 0 50px #020c1b; }
+    .header{background:linear-gradient(145deg,#112240,#0a192f);padding:12px 18px;border-bottom:3px solid #64ffda;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px #64ffda30; flex-wrap:wrap;}
+    .header h1{font-size:1.6rem;font-weight:900;background:linear-gradient(45deg,#64ffda,#8892b0);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 20px #64ffda;flex:1;}
+    .header-actions{display:flex;gap:8px;}
+    .icon-btn{background:#112240;border:1px solid #233554;color:#64ffda;border-radius:30px;padding:6px 12px;font-size:0.8rem;cursor:pointer;transition:0.1s; display:flex; align-items:center; gap:4px;}
+    .icon-btn:hover{background:#233554;}
+    .mode-selector{display:flex;gap:8px;margin-right:10px;}
+    .mode-btn{background:#112240;border:1px solid #233554;color:#8892b0;border-radius:30px;padding:6px 12px;font-size:0.8rem;cursor:pointer;transition:0.1s;}
+    .mode-btn.active{background:#64ffda;border-color:#64ffda;color:#0a192f;box-shadow:0 0 10px #64ffda;}
+    .profile-section{padding:16px 18px 8px;background:#020c1b;border-bottom:1px solid #233554;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+    .avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(145deg,#64ffda,#0a192f);border:2px solid #64ffda;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:bold;color:#0a192f;box-shadow:0 0 15px #64ffda80;}
+    .profile-info{flex:1;}
+    .profile-name{font-size:1.2rem;font-weight:bold;color:#ccd6f6;display:flex;align-items:center;gap:8px;}
+    .badge{background:#64ffda20;border:1px solid #64ffda;color:#64ffda;padding:2px 8px;border-radius:20px;font-size:0.7rem;}
+    .profile-bio{font-size:0.85rem;color:#8892b0;margin-top:4px;}
+    .profile-stats{display:flex;gap:16px;margin-top:6px;}
+    .stat-item{display:flex;flex-direction:column;align-items:center;}
+    .stat-value{font-weight:bold;color:#64ffda;}
+    .stat-label{font-size:0.65rem;color:#8892b0;}
+    .edit-profile-btn{background:transparent;border:1px solid #64ffda;color:#64ffda;border-radius:20px;padding:4px 12px;font-size:0.75rem;cursor:pointer;}
+    .chat-container{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:16px;background:#0a192f;background-image:radial-gradient(circle at 30% 20%,#112240 0%,#020c1b 90%);scroll-behavior:smooth;}
+    .chat-container::-webkit-scrollbar{width:5px;}
+    .chat-container::-webkit-scrollbar-track{background:#112240;}
+    .chat-container::-webkit-scrollbar-thumb{background:#64ffda;border-radius:10px;}
+    .message{display:flex;flex-direction:column;max-width:85%;animation:slideUp 0.2s; position:relative;}
+    .user-message{align-self:flex-end;}
+    .bot-message{align-self:flex-start; width:100%;}
+    .bubble{padding:12px 18px;border-radius:24px;line-height:1.6;font-size:1rem;word-break:break-word;box-shadow:0 5px 10px #00000060; white-space: pre-wrap; }
+    .user-bubble{background:#233554;color:#e6f1ff;border-bottom-right-radius:6px;border:1px solid #64ffda;}
+    .bot-bubble{background:#112240;color:#ccd6f6;border-bottom-left-radius:6px;border:1px solid #64ffda;}
+    .ai-helper-card { display: flex; justify-content: center; margin-bottom: 8px; }
+    .helper-badge { background: #64ffda20; border:1px solid #64ffda; color:#64ffda; padding:6px 20px; border-radius: 40px; font-size:0.85rem; backdrop-filter: blur(4px); box-shadow:0 0 15px #64ffda40; }
+    .message-actions{display:flex; gap:4px; margin-top:4px; margin-left:8px;}
+    .delete-btn{background:transparent; border:1px solid #ff6b6b; color:#ff6b6b; border-radius:20px; padding:2px 8px; font-size:0.65rem; cursor:pointer; opacity:0.7;}
+    .delete-btn:hover{opacity:1; background:#ff6b6b20;}
+    .thinking-module{display:flex;align-items:center;gap:12px;padding:14px 20px;background:#112240;border-radius:40px;width:fit-content;border:1.5px solid #64ffda;box-shadow:0 0 20px #64ffda40;}
+    .thinking-text{color:#64ffda;font-style:italic;}
+    .dot-flashing{display:flex;gap:8px;}
+    .dot-flashing span{width:10px;height:10px;border-radius:50%;background:#64ffda;animation:flash 1.2s infinite;}
+    .dot-flashing span:nth-child(2){animation-delay:0.2s;}
+    .dot-flashing span:nth-child(3){animation-delay:0.4s;}
+    @keyframes flash{0%,100%{opacity:0.2;transform:scale(0.7);}50%{opacity:1;transform:scale(1.3);background:#64ffda;}}
+    .pulse-bar{display:flex;gap:4px;}
+    .pulse-bar span{width:20px;height:8px;background:#64ffda;border-radius:4px;animation:pulseBar 1.2s infinite;}
+    .pulse-bar span:nth-child(2){animation-delay:0.2s;}
+    .pulse-bar span:nth-child(3){animation-delay:0.4s;}
+    @keyframes pulseBar{0%,100%{opacity:0.3;transform:scaleY(0.7);}50%{opacity:1;transform:scaleY(1.3);background:#64ffda;}}
+    .typing-cursor{display:inline-block;width:3px;height:1.3em;background:#64ffda;margin-left:5px;animation:blink 1s step-end infinite;}
+    @keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+    .input-area{padding:14px 18px;background:#0a192f;border-top:2px solid #233554;display:flex;gap:10px;align-items:center;}
+    .attach-btn{background:#112240;border:1px solid #233554;color:#64ffda;width:48px;height:48px;border-radius:30px;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;}
+    .input-area input{flex:1;background:#112240;border:1.5px solid #233554;border-radius:60px;padding:14px 18px;color:#ccd6f6;font-size:1rem;outline:none;}
+    .input-area input:focus{border-color:#64ffda;box-shadow:0 0 15px #64ffda80;}
+    .send-btn{background:#64ffda;border:none;border-radius:40px;width:56px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#0a192f;font-size:22px;border:1px solid #64ffda;position:relative;overflow:hidden;font-weight:bold;}
+    .send-btn:hover{background:#9bf0d5;}
+    .train-animation{position:absolute;pointer-events:none;animation:trainFly 0.4s ease-out forwards;}
+    @keyframes trainFly{0%{transform:translateX(0) scale(1);opacity:1;}100%{transform:translateX(60px) scale(0.2);opacity:0;}}
+    .timestamp{font-size:0.65rem;margin-top:5px;margin-left:10px;color:#8892b0;}
+    .media-preview{max-width:200px;max-height:200px; border-radius:20px; margin-top:8px; border:1px solid #64ffda; object-fit: cover; }
+    @keyframes slideUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+    .toggle-sidebar { display:none; }
+    @media (max-width:700px) {
+      .history-sidebar { position:fixed; height:100%; transform:translateX(-100%); }
+      .history-sidebar.open { transform:translateX(0); }
+      .toggle-sidebar { display:block; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="history-sidebar" id="historySidebar">
+    <div class="sidebar-header">
+      <span>📚 Riwayat Chat</span>
+      <button class="icon-btn" id="closeSidebarBtn" style="padding:4px 8px;">✕</button>
+    </div>
+    <button class="new-chat-btn-side" id="newChatSideBtn">✨ New Chat</button>
+    <div class="history-list" id="historyList"></div>
+    <button class="clear-all-sessions-btn" id="clearAllSessionsBtn">🗑️ Hapus Semua Riwayat</button>
+  </div>
+  <div class="main-chat">
+    <div class="header">
+      <button class="icon-btn toggle-sidebar" id="toggleSidebarBtn">☰</button>
+      <h1>🌟 JES-VIP</h1>
+      <div class="mode-selector">
+        <button class="mode-btn active" data-mode="dot">🔵 Dot</button>
+        <button class="mode-btn" data-mode="pulse">📶 Pulse</button>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="clearHistoryBtn">🧹 Clear</button>
+      </div>
+    </div>
+    <div class="profile-section">
+      <div class="avatar" id="profileAvatar">👤</div>
+      <div class="profile-info">
+        <div class="profile-name">
+          <span id="profileDisplayName">Pengguna JES-VIP</span>
+          <span class="badge">⭐ Member</span>
+          <button class="edit-profile-btn" id="editProfileBtn">✏️ Edit</button>
+        </div>
+        <div class="profile-bio" id="profileBio">AI enthusiast · Selalu ingin belajar</div>
+        <div class="profile-stats">
+          <div class="stat-item"><span class="stat-value" id="msgCount">0</span><span class="stat-label">Pesan</span></div>
+          <div class="stat-item"><span class="stat-value" id="sessionCount">1</span><span class="stat-label">Sesi</span></div>
+          <div class="stat-item"><span class="stat-value">🌟</span><span class="stat-label">Aktif</span></div>
+        </div>
+      </div>
+    </div>
+    <div id="chatBox" class="chat-container"></div>
+    <div class="input-area">
+      <input type="file" id="mediaInput" accept="image/*" style="display:none;">
+      <button class="attach-btn" id="attachBtn">📎</button>
+      <input type="text" id="userInput" placeholder="Tanyakan apa saja dengan akurat..." autocomplete="off">
+      <button class="send-btn" id="sendBtn">➤</button>
+    </div>
+  </div>
+</div>
+<script>
+  (function(){
+    // API KEY
+    const MISTRAL_KEY = "xyiyIWvnseQPYPgrrgs6QDyweeeodSrR";
+    const API_URL = "https://api.mistral.ai/v1/chat/completions";
+    
+    // DOM Elements
+    const chatBox = document.getElementById('chatBox');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const attachBtn = document.getElementById('attachBtn');
+    const mediaInput = document.getElementById('mediaInput');
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    const editProfileBtn = document.getElementById('editProfileBtn');
+    const profileAvatar = document.getElementById('profileAvatar');
+    const profileDisplayName = document.getElementById('profileDisplayName');
+    const profileBio = document.getElementById('profileBio');
+    const msgCountSpan = document.getElementById('msgCount');
+    const sessionCountSpan = document.getElementById('sessionCount');
+    const historySidebar = document.getElementById('historySidebar');
+    const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+    const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+    const newChatSideBtn = document.getElementById('newChatSideBtn');
+    const clearAllSessionsBtn = document.getElementById('clearAllSessionsBtn');
+    const historyList = document.getElementById('historyList');
+    
+    let isGenerating = false;
+    let currentMode = 'dot';
+    let currentSessionId = Date.now();
+    
+    // SYSTEM PROMPT UNTUK KECERDASAN MAKSIMAL
+    const SYSTEM_PROMPT = `Kamu adalah JES-VIP, asisten AI tercanggih milik KEN-PRIME. 
+Kamu sangat cerdas, akurat, dan selalu memberikan jawaban yang benar berdasarkan fakta dan logika.
+Aturan ketat:
+1. Jika kamu tidak tahu jawaban suatu pertanyaan, katakan dengan jujur "Maaf, saya tidak memiliki informasi yang cukup untuk menjawab pertanyaan itu." JANGAN PERNAH MENGARANG.
+2. Berikan jawaban yang ringkas namun lengkap, hindari bertele-tele.
+3. Gunakan bahasa Indonesia yang baik dan benar, sopan, dan mudah dipahami.
+4. Jika diminta menampilkan gambar, gunakan format [img]URL_GAMBAR_VALID[/img]. Pastikan URL tersebut benar-benar ada dan relevan.
+5. Jika ada pertanyaan yang ambigu, minta klarifikasi sebelum menjawab.
+6. Selalu prioritaskan akurasi di atas segalanya.`;
+
+    let conversationHistory = [
+      { role: "system", content: SYSTEM_PROMPT }
+    ];
+    
+    // ---------- HISTORY STORAGE ----------
+    function getSavedSessions() {
+      const saved = localStorage.getItem('jesvip_sessions');
+      return saved ? JSON.parse(saved) : [];
+    }
+    function saveSessions(sessions) { localStorage.setItem('jesvip_sessions', JSON.stringify(sessions)); }
+    function saveCurrentSession() {
+      if(conversationHistory.length <= 1) return;
+      const sessions = getSavedSessions();
+      const existingIndex = sessions.findIndex(s => s.id === currentSessionId);
+      const sessionData = {
+        id: currentSessionId,
+        title: conversationHistory.find(m => m.role === 'user')?.content.substring(0,30) || 'Percakapan baru',
+        lastUpdated: Date.now(),
+        messages: conversationHistory.slice(1)
+      };
+      if(existingIndex >= 0) sessions[existingIndex] = sessionData;
+      else sessions.push(sessionData);
+      saveSessions(sessions);
+      renderHistoryList();
+    }
+    function loadSession(id) {
+      const sessions = getSavedSessions();
+      const session = sessions.find(s => s.id === id);
+      if(session) {
+        conversationHistory = [conversationHistory[0], ...session.messages];
+        currentSessionId = session.id;
+        renderChatFromHistory();
+        updateMessageCount();
+        if(window.innerWidth <= 700) historySidebar.classList.remove('open');
+      }
+    }
+    function deleteSession(id) {
+      let sessions = getSavedSessions();
+      sessions = sessions.filter(s => s.id !== id);
+      saveSessions(sessions);
+      renderHistoryList();
+      if(currentSessionId === id) newSession();
+    }
+    function clearAllSessions() {
+      localStorage.removeItem('jesvip_sessions');
+      renderHistoryList();
+      newSession();
+    }
+    function newSession() {
+      saveCurrentSession();
+      currentSessionId = Date.now();
+      conversationHistory = [conversationHistory[0]];
+      renderChatFromHistory();
+      updateMessageCount();
+      updateSessionCount();
+    }
+    function renderHistoryList() {
+      const sessions = getSavedSessions();
+      historyList.innerHTML = '';
+      sessions.sort((a,b) => b.lastUpdated - a.lastUpdated).forEach(s => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.innerHTML = `
+          <div class="history-title">${escapeHTML(s.title)}</div>
+          <div class="history-time">${new Date(s.lastUpdated).toLocaleString()}</div>
+          <button class="delete-session-btn" data-id="${s.id}">🗑️</button>
+        `;
+        div.onclick = (e) => { if(!e.target.classList.contains('delete-session-btn')) loadSession(s.id); };
+        div.querySelector('.delete-session-btn').onclick = (e) => { e.stopPropagation(); deleteSession(s.id); };
+        historyList.appendChild(div);
+      });
+    }
+    function updateSessionCount() {
+      sessionCountSpan.textContent = getSavedSessions().length + 1;
+    }
+    
+    // ---------- PROFILE ----------
+    function loadProfile() {
+      const saved = localStorage.getItem('jesvip_profile');
+      if(saved) {
+        try{
+          const p = JSON.parse(saved);
+          profileAvatar.textContent = p.avatar || '👤';
+          profileDisplayName.textContent = p.name || 'Pengguna JES-VIP';
+          profileBio.textContent = p.bio || 'AI enthusiast · Selalu ingin belajar';
+        }catch(e){}
+      }
+    }
+    function saveProfile(name, bio, avatar) {
+      const profile = { name, bio, avatar };
+      localStorage.setItem('jesvip_profile', JSON.stringify(profile));
+      profileAvatar.textContent = avatar || '👤';
+      profileDisplayName.textContent = name || 'Pengguna JES-VIP';
+      profileBio.textContent = bio || 'AI enthusiast · Selalu ingin belajar';
+    }
+    function updateMessageCount() {
+      const userMsgCount = conversationHistory.filter(m => m.role === 'user').length;
+      msgCountSpan.textContent = userMsgCount;
+    }
+    editProfileBtn.addEventListener('click', ()=>{
+      const newName = prompt('Masukkan nama tampilan:', profileDisplayName.textContent);
+      if(newName !== null) {
+        const newBio = prompt('Masukkan bio singkat:', profileBio.textContent);
+        if(newBio !== null) {
+          const newAvatar = prompt('Masukkan emoji avatar (1 karakter):', profileAvatar.textContent);
+          saveProfile(newName || 'Pengguna JES-VIP', newBio || '', newAvatar || '👤');
+        }
+      }
+    });
+    
+    // ---------- PARSING GAMBAR ----------
+    function parseAIResponse(text) {
+      const imgRegex = /\[img\](.*?)\[\/img\]/gi;
+      const parts = [];
+      let lastIndex = 0;
+      let match;
+      while ((match = imgRegex.exec(text)) !== null) {
+        if (match.index > lastIndex) {
+          parts.push({ type: 'text', content: text.substring(lastIndex, match.index) });
+        }
+        parts.push({ type: 'image', url: match[1] });
+        lastIndex = match.index + match[0].length;
+      }
+      if (lastIndex < text.length) {
+        parts.push({ type: 'text', content: text.substring(lastIndex) });
+      }
+      return parts.length ? parts : [{ type: 'text', content: text }];
+    }
+    
+    // ---------- RENDER CHAT ----------
+    function renderChatFromHistory() {
+      chatBox.innerHTML = '';
+      const welcomeDiv = document.createElement('div');
+      welcomeDiv.className = 'message bot-message';
+      welcomeDiv.innerHTML = `
+        <div class="ai-helper-card"><div class="helper-badge">✨ butuh bantuan apa anda? ✨</div></div>
+        <div class="bubble bot-bubble">Halo! Aku JES-VIP, asisten AI paling pintar. Tanyakan apa saja, akan kujawab dengan akurat.</div>
+        <div class="timestamp">${formatTime()}</div>
+      `;
+      chatBox.appendChild(welcomeDiv);
+      conversationHistory.slice(1).forEach(msg => {
+        if (msg.role === 'user') addUserMessageToChat(msg.content, null, false);
+        else if (msg.role === 'assistant') addBotMessageToChat(msg.content, false);
+      });
+      scrollBottom();
+    }
+    
+    function addUserMessageToChat(text, imgUrl=null, pushToHistory = true) {
+      const div = document.createElement('div');
+      div.className = 'message user-message';
+      let html = `<div class="bubble user-bubble">${escapeHTML(text)}</div>`;
+      if(imgUrl) html += `<img src="${imgUrl}" class="media-preview" alt="upload">`;
+      html += `<div class="timestamp">${formatTime()}</div>`;
+      html += `<div class="message-actions"><button class="delete-btn" data-role="user" data-content="${escapeHTML(text)}">🗑️</button></div>`;
+      div.innerHTML = html;
+      chatBox.appendChild(div);
+      scrollBottom();
+      if(pushToHistory) conversationHistory.push({ role: "user", content: text });
+      div.querySelector('.delete-btn').addEventListener('click', (e)=> deleteMessageByContent(e.target.dataset.content, 'user'));
+      updateMessageCount();
+      saveCurrentSession();
+    }
+    
+    function addBotMessageToChat(text, pushToHistory = true) {
+      const div = document.createElement('div');
+      div.className = 'message bot-message';
+      const card = document.createElement('div');
+      card.className = 'ai-helper-card';
+      card.innerHTML = '<div class="helper-badge">✨ butuh bantuan apa anda? ✨</div>';
+      div.appendChild(card);
+      const parts = parseAIResponse(text);
+      parts.forEach(part => {
+        if (part.type === 'text' && part.content.trim()) {
+          const bubble = document.createElement('div');
+          bubble.className = 'bubble bot-bubble';
+          bubble.textContent = part.content;
+          div.appendChild(bubble);
+        } else if (part.type === 'image') {
+          const img = document.createElement('img');
+          img.src = part.url;
+          img.className = 'media-preview';
+          img.style.marginBottom = '8px';
+          img.onerror = () => img.alt = 'Gagal memuat gambar';
+          div.appendChild(img);
+        }
+      });
+      div.innerHTML += `<div class="timestamp">${formatTime()}</div>`;
+      div.innerHTML += `<div class="message-actions"><button class="delete-btn" data-role="assistant" data-content="${escapeHTML(text)}">🗑️</button></div>`;
+      chatBox.appendChild(div);
+      scrollBottom();
+      if(pushToHistory) conversationHistory.push({ role: "assistant", content: text });
+      div.querySelector('.delete-btn').addEventListener('click', (e)=> deleteMessageByContent(e.target.dataset.content, 'assistant'));
+      saveCurrentSession();
+      return div;
+    }
+    
+    function deleteMessageByContent(content, role) {
+      const index = conversationHistory.findIndex((msg,i) => i>0 && msg.role === role && msg.content === content);
+      if(index !== -1) conversationHistory.splice(index, 1);
+      renderChatFromHistory();
+      saveCurrentSession();
+    }
+    function clearAllHistory() {
+      conversationHistory = [conversationHistory[0]];
+      renderChatFromHistory();
+      updateMessageCount();
+      saveCurrentSession();
+    }
+    
+    const formatTime = ()=> new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    const scrollBottom = ()=> chatBox.scrollTop = chatBox.scrollHeight;
+    const escapeHTML = (s)=> s.replace(/[&<>]/g, m=> ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]||m);
+    
+    function showThinking(){
+      const wrap = document.createElement('div');
+      wrap.className = 'message bot-message';
+      const card = document.createElement('div');
+      card.className = 'ai-helper-card';
+      card.innerHTML = '<div class="helper-badge">✨ butuh bantuan apa anda? ✨</div>';
+      wrap.appendChild(card);
+      const mod = document.createElement('div');
+      mod.className = 'thinking-module';
+      mod.innerHTML = `<span class="thinking-text">💭 Berpikir...</span>`;
+      const anim = document.createElement('div');
+      if(currentMode==='dot'){
+        anim.className = 'dot-flashing';
+        anim.innerHTML = '<span></span><span></span><span></span>';
+      }else{
+        anim.className = 'pulse-bar';
+        anim.innerHTML = '<span></span><span></span><span></span>';
+      }
+      mod.appendChild(anim);
+      wrap.appendChild(mod);
+      chatBox.appendChild(wrap);
+      scrollBottom();
+      return wrap;
+    }
+    function removeThinking(el){ if(el) el.remove(); }
+    function typewriter(element, text, speed=20){
+      return new Promise(resolve=>{
+        let i=0;
+        element.textContent = '';
+        const cursor = document.createElement('span');
+        cursor.className = 'typing-cursor';
+        element.appendChild(cursor);
+        function type(){
+          if(i<text.length){
+            element.textContent = text.substring(0,i+1);
+            element.appendChild(cursor);
+            i++;
+            setTimeout(type, speed);
+          }else{
+            const c = element.querySelector('.typing-cursor');
+            if(c) c.remove();
+            resolve();
+          }
+        }
+        type();
+      });
+    }
+    async function callMistralWithMemory() {
+      const res = await fetch(API_URL, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${MISTRAL_KEY}`},
+        body:JSON.stringify({ 
+          model: "mistral-small-latest", 
+          messages: conversationHistory, 
+          temperature: 0.3,  // Rendah = lebih akurat, tidak mengarang
+          max_tokens: 900 
+        })
+      });
+      const rawText = await res.text();
+      if(!res.ok) throw new Error(`HTTP ${res.status}: ${rawText}`);
+      const data = JSON.parse(rawText);
+      if(!data.choices?.[0]?.message?.content) throw new Error('Respons kosong');
+      return data.choices[0].message.content;
+    }
+    function trainAnimation(){
+      const train = document.createElement('span');
+      train.textContent = '🚂';
+      train.style.cssText = 'position:absolute;left:10px;top:10px;font-size:28px;pointer-events:none;';
+      train.classList.add('train-animation');
+      sendBtn.style.position = 'relative';
+      sendBtn.appendChild(train);
+      setTimeout(()=> train.remove(), 400);
+    }
+    async function sendMessage(){
+      const text = userInput.value.trim();
+      if(!text || isGenerating) return;
+      userInput.value = '';
+      isGenerating = true;
+      sendBtn.disabled = true;
+      userInput.disabled = true;
+      trainAnimation();
+      addUserMessageToChat(text, null, true);
+      const thinkEl = showThinking();
+      try{
+        const reply = await callMistralWithMemory();
+        removeThinking(thinkEl);
+        const bubbleContainer = addBotMessageToChat(reply, true);
+        const textBubble = bubbleContainer.querySelector('.bubble');
+        if(textBubble) await typewriter(textBubble, textBubble.textContent, 20);
+      }catch(e){
+        removeThinking(thinkEl);
+        console.error(e);
+        const errMsg = `⚠️ Maaf, terjadi kesalahan: ${e.message}`;
+        const eb = addBotMessageToChat(errMsg, false);
+        const textBubble = eb.querySelector('.bubble');
+        if(textBubble) await typewriter(textBubble, errMsg, 15);
+      }finally{
+        isGenerating = false;
+        sendBtn.disabled = false;
+        userInput.disabled = false;
+        userInput.focus();
+      }
+    }
+    
+    // ---------- EVENT LISTENERS ----------
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', e=>{ if(e.key==='Enter'){ e.preventDefault(); sendMessage(); }});
+    attachBtn.addEventListener('click', ()=> mediaInput.click());
+    mediaInput.addEventListener('change', e=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ev=>{
+        const url = ev.target.result;
+        addUserMessageToChat(`[Media] 📷 ${file.name}`, url, true);
+        setTimeout(async ()=>{
+          const think = showThinking();
+          await new Promise(r=> setTimeout(r, 500));
+          removeThinking(think);
+          const reply = `📎 Gambar "${file.name}" diterima.`;
+          const bubbleContainer = addBotMessageToChat(reply, true);
+          const textBubble = bubbleContainer.querySelector('.bubble');
+          if(textBubble) await typewriter(textBubble, reply, 20);
+        }, 50);
+        mediaInput.value = '';
+      };
+      reader.readAsDataURL(file);
+    });
+    modeBtns.forEach(b=> b.addEventListener('click', function(){
+      modeBtns.forEach(btn=> btn.classList.remove('active'));
+      this.classList.add('active');
+      currentMode = this.dataset.mode;
+    }));
+    clearHistoryBtn.addEventListener('click', clearAllHistory);
+    newChatSideBtn.addEventListener('click', newSession);
+    clearAllSessionsBtn.addEventListener('click', clearAllSessions);
+    toggleSidebarBtn.addEventListener('click', ()=> historySidebar.classList.toggle('open'));
+    closeSidebarBtn.addEventListener('click', ()=> historySidebar.classList.remove('open'));
+    
+    // ---------- INIT ----------
+    loadProfile();
+    renderChatFromHistory();
+    renderHistoryList();
+    updateMessageCount();
+    updateSessionCount();
+    userInput.focus();
+  })();
+</script>
+</body>
+  </html>
